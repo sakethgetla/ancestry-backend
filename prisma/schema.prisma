@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+  output   = "../node_modules/.prisma/client"
+
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Ancestor {
+  id                 String             @id @default(uuid())
+  email              String             @unique
+  name               String
+  ancestorRelations  AncestorRelation[] @relation("AncestorRelation")
+  ancestorRelations2 AncestorRelation[] @relation("AncestorRelation2")
+
+  @@map("ancestor")
+}
+
+model AncestorRelation {
+  id String @id @default(uuid())
+
+  ancestor   Ancestor @relation(name: "AncestorRelation", fields: [ancestorId], references: [id])
+  ancestorId String   @map("ancestor_id")
+
+  relationType RelationType @map("relation_type")
+
+  ancestor2   Ancestor @relation(name: "AncestorRelation2", fields: [ancestorId2], references: [id])
+  ancestorId2 String   @map("ancestor_id2")
+
+  @@map("ancestor_relation")
+}
+
+enum RelationType {
+  CHILD
+  SPOUSE
+
+  @@map("relation_type")
+}
